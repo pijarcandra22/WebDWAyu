@@ -7,29 +7,101 @@
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
     <title>Sistem Rekomendasi</title>
-</head>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <style>
+      #back{
+        background-image: url(https://images.unsplash.com/photo-1457369804613-52c61a468e7d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8YWVzdGhldGljJTIwYm9va3xlbnwwfHwwfHw%3D&w=1000&q=80);
+        height: 100vh;
+        width: 100%;
+        background-position: center;
+      }
+    </style>
+  </head>
 <body>
-    <div class="bbbootstrap">
+
+    <div id="back" class="position-relative">
+      <div class="position-absolute top-50 start-50 translate-middle">
+        <h1 style="color:white; text-shadow:0 0 10px black">Cari Buku Yang Direkomendasikan Untukmu</h1>
+        <form id="dataInput">
+          <div class="input-group mb-3">
+            <input name="Form_Search" type="text" placeholder="Input Your ID" class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2">
+            <button class="btn btn-light" id="Form_Go" type="button">INPUT</button>
+          </div>
+        </form>
+          
+      </div>
+    </div>
+
+    <!-- <div class="bbbootstrap">
         <div class="container">
-            <form>
-                <span role="status" aria-live="polite" class="ui-helper-hidden-accessible"></span><input type="text" id="Form_Search" value="" placeholder="Input Your ID" role="searchbox" class="InputBox " autocomplete="off">
+            <form id="dataInput">
+                <span role="status" aria-live="polite" class="ui-helper-hidden-accessible"></span>
+                <input type="text" name="Form_Search" id="Form_Search" value="" placeholder="Input Your ID" role="searchbox" class="InputBox " autocomplete="off">
                 <input type="button" id="Form_Go" class="Button" value="INPUT">
             </form>
         </div>
-    </div>
-    <div class="container align-self-center">
-        <h1>Novel that User has Given Rating to</h1>
-        <p>This part is inside a .container class.</p> 
-        <p>The .container class provides a responsive fixed width container.</p>
-        <p>Resize the browser window to see that its width (max-width) will change at different breakpoints.</p>
-    </div>
-    <div class="container align-self-center">
-        <h1>Recommended Novel</h1>
-        <p>This part is inside a .container class.</p> 
-        <p>The .container class provides a responsive fixed width container.</p>
-        <p>Resize the browser window to see that its width (max-width) will change at different breakpoints.</p>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    </div> -->
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" style="height:80vh">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" style="text-align: center; width: 100%; font-weight: 700;" id="exampleModalLabel">REKOMENDASI BUKU</h1>
+          </div>
+          <div class="modal-body">
+            <table class="table table-striped" style="width:100%; text-align: center;">
+              <thead>
+                  <tr>
+                      <th>Judul Buku</th>
+                      <th>Category</th>
+                      <th>Image</th>
+                  </tr>
+              </thead>
+              <tbody id="add_Data">
+                
+              </tbody>
+            </table>
+          </div>
+          <div style="text-align: center; width: 100%; margin: 20px 0;">
+            <h3 id="evaluasi"></h3>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
 </body>
 </html>
+<script>
+    $( document ).ready(function() {
+      const myModal = new bootstrap.Modal('#myModal', {
+        keyboard: false
+      })
+      
+        $("#Form_Go").click(function () {
+            $.ajax({
+                type: "POST",
+                data: $("#dataInput").serialize(),
+                url: "/rekomendasi",
+                success: function(data)
+                { 
+                  data =JSON.parse(data)
+                  console.log(data['prediksi'])
+
+                  $("#evaluasi").html("Evaluasi: "+data['evaluasi'])
+                  data = data['prediksi']
+                  for(i=0;i<Object.keys(data).length;i++){
+                    $("#add_Data").append(
+                      '<tr><td>'+data[i]['judul']+'</td>'+
+                        '<td>'+data[i]['kat']+'</td>'+
+                        '<td><img src="'+data[i]['gambar']+'" alt=""></td>'+
+                      '</tr>'
+                    );
+                  }
+                  myModal.show()
+                }
+            });
+        })
+    })
+</script>
